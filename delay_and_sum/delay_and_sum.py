@@ -66,4 +66,4 @@ class DelayAndSumPlane:
             # sum up everything and add rms value of sum to the list
             rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
 
-        return rms_values
+        return self._sp.to_db(rms_values)
