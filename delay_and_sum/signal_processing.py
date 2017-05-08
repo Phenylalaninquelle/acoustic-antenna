@@ -44,3 +44,31 @@ class SignalProcessor:
             delay = int(delay)
             signal[delay:] = signal[:-delay]
             signal[:delay] = 0
+
+    def delay_signals_with_baseDelay(self, signals, base_delay):
+        """
+        Take an (N,m) array with signals (m being the number of signals
+        and N being the length of the signals) and create a constant
+        delay (of 'base_delay') between the signals.
+
+        signals: numpy array with the signals stacked horizontally
+        base_delay: delay to create between the microphones in samples
+                    (if not an integer value will be rounded),
+                    if this is positive the last sigal in the array will
+                    have a delay of zero and the signal at position zero
+                    will have a delay of (N-1)*base_delay (other way round
+                    for negative base_delay)
+        """
+        num_mics = signals.shape[1]
+        if base_delay > 0:
+            delay_for_mic = lambda n: num_mics - n
+        elif base_delay < 0:
+            delay_for_mic = lambda n: n - 1
+        else:
+            # for angle of zero no delay is needed
+            return
+
+        for n in range(1, num_mics + 1):
+            # compute delay in samples
+            delay = np.round(delay_for_mic(n) * base_delay)
+            self.delay_signal(signals[:,n - 1], np.abs(delay))

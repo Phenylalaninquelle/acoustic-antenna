@@ -48,9 +48,7 @@ class TestsignalGenerator:
         Returns: (length, num_mics) - Numpy Array with the test signals
                  The nth column contains the signal with a delay of n*delta_t
         """
-        signals = []
-        for i in range(num_mics):
-            sig_tmp = self.create_sine(freq, length)
-            self._sp.delay_signal(sig_tmp, i * delta_t)
-            signals.append(sig_tmp)
-        return np.concatenate(signals, 1)
+        signals = np.concatenate([self.create_sine(freq, length) \
+                                  for i in range(num_mics)], 1)
+        self._sp.delay_signals_with_baseDelay(signals, delta_t)
+        return signals[..., ::-1]

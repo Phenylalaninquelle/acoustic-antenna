@@ -29,13 +29,14 @@ class DelayAndSumPlane:
 
 
     def __repr__(self):
-        desc = "<DelayAndSum Object with {nm} mics with distance of {dx}>"
-        return desc.format(nm=self._num_mics, dx=self._delta_x)
+        desc = "<DelayAndSum Object with {nm} mics with distance of {dx}, fs: {fs}>"
+        return desc.format(nm=self._num_mics, dx=self._delta_x, fs=self._fs)
 
 
     def delta_t_for_angle(self, angle):
         """
-        Computes time delay between two adjacent microphones
+        Compute time delay between two adjacent microphones.
+
 
         angle: angle of incoming wave in degrees
         """
@@ -58,22 +59,9 @@ class DelayAndSumPlane:
         for angle in range(start_angle, stop_angle + 1, angle_steps):
             signals_tmp = deepcopy(signals)
             delta_t = self.delta_t_for_angle(angle)
+            delay = delta_t * self._fs
 
-            # set up things for signal delaying
-            do_delay = True
-            if delta_t > 0:
-                delay_for_mic = delay_if_pos
-            elif delta_t < 0:
-                delay_for_mic = delay_if_neg
-            else:
-                do_delay = False
-
-            if do_delay:
-                for n in range(1, self._num_mics):
-                    # compute delay in samples
-                    delay = delay_for_mic(n) * delta_t * self._fs
-                    delay = np.abs(np.round(delay))
-                    self._sp.delay_signal(signals_tmp[:,n], delay)
+            self._sp.delay_signals_with_baseDelay(signals_tmp, delay)
 
             # sum up everything and add rms value of sum to the list
             rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
