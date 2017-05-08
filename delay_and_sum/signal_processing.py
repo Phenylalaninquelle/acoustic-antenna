@@ -41,5 +41,6 @@ class SignalProcessor:
             if delay < 0 or delay > len(signal):
                 raise ValueError("Delay must be 0 <= delay <= signalLength!")
 
+            delay = int(delay)
             signal[delay:] = signal[:-delay]
             signal[:delay] = 0

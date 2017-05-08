@@ -10,11 +10,22 @@ class DelayAndSumPlane:
     an acoustical antenna. This implementation assumes plane waves.
     """
 
-    def __init__(self, delta_x, num_mics, signal_processor=None):
+    def __init__(self, delta_x, num_mics, fs, signal_processor=None):
+        """
+        Initialise new object.
+
+        delta_x: distance between the microphones of the array
+        num_mics: number of microphones in the array
+        fs: sampling frequency
+        signal_processor: SignalProcessor object
+        """
         self._delta_x = delta_x
         self._num_mics = num_mics
+        self._fs = fs
         if signal_processor is None:
             self._sp = SignalProcessor()
+        else:
+            self._sp = signal_processor
 
 
     def __repr__(self):
@@ -27,12 +38,12 @@ class DelayAndSumPlane:
         Computes time delay between two adjacent microphones
 
         angle: angle of incoming wave in degrees
-        delta_x: distance between the microphones in meters
         """
-        return self._delta_x * np.sin(TO_RAD * angle) / SPEED_OF_SOUND
+        angle = self._delta_x * np.sin(TO_RAD * angle) / SPEED_OF_SOUND
+        return angle
 
 
-    def make_rms_list(signals, start_angle=-90, stop_angle=90, angle_steps=1):
+    def make_rms_list(self, signals, start_angle=-90, stop_angle=90, angle_steps=1):
         """
         Perform delay & sum algorithm for a given set of microphone signals
         to compute an array of rms values for the angles from -90 to 90 degrees
@@ -58,12 +69,13 @@ class DelayAndSumPlane:
                 do_delay = False
 
             if do_delay:
-                for n in range(1, self._num_mics + 1):
+                for n in range(1, self._num_mics):
                     # compute delay in samples
-                    delay = (int) (np.round(delay_for_mic(n) * delta_t))
-                    self._sp.delay_signals(signals_tmp[:,n], delay)
+                    delay = delay_for_mic(n) * delta_t * self._fs
+                    delay = np.abs(np.round(delay))
+                    self._sp.delay_signal(signals_tmp[:,n], delay)
 
             # sum up everything and add rms value of sum to the list
             rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
 
-        return rms_list
+        return rms_values
