@@ -1,3 +1,9 @@
 *.pyc
 *.swp
 env
+*aux
+*log
+*out
+*pdf
+*toc
+*.synctex.gz
