@@ -12,6 +12,12 @@ class TestsignalGenerator:
     """
 
     def __init__(self, signal_processor=None):
+        """
+        Initialise new TestsignalGenerator object
+
+        signal_processor: SignalProcessor object,
+                          if not given, create new one
+        """
         if signal_processor is None:
             self._sp = SignalProcessor()
         else:
@@ -26,14 +32,16 @@ class TestsignalGenerator:
         length: Length of the array in samples
         fs: sampling frequency
 
-        Returns: (length, 1) - Numpy Array with sine signal
+        returns: (length, 1) - Numpy Array with sine signal
         """
-        # compute discrete frequency for used samplerate
         if freq < 0 or freq >= fs/2.:
             raise ValueError("Frequency must be 0 <= freq < fs/2!")
-        f = freq / fs
+
+        # compute discrete frequency for used samplerate
+        omega = 2 * np.pi * freq / fs
+
         n = np.arange(0, length, 1)
-        return np.sin(2 * np.pi * f * n).reshape(length, 1)
+        return np.sin(omega * n).reshape(length, 1)
 
 
     def plane_wave_testsignals(self, num_mics, freq, length, delta_t):
@@ -45,7 +53,7 @@ class TestsignalGenerator:
         length: length of the signals
         delta_t: time difference between the signals in two neighboured mics
 
-        Returns: (length, num_mics) - Numpy Array with the test signals
+        returns: (length, num_mics) - Numpy Array with the test signals
                  The nth column contains the signal with a delay of n*delta_t
         """
         signals = np.concatenate([self.create_sine(freq, length) \

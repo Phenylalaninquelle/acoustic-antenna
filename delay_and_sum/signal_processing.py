@@ -16,7 +16,7 @@ class SignalProcessor:
 
         sig: numpy array with the signal values
 
-        Returns: the rms value of the signal
+        returns: the rms value of the signal
         """
         return np.sqrt( 1./len(sig) * np.square(sig).sum())
 
@@ -53,7 +53,7 @@ class SignalProcessor:
 
         signals: numpy array with the signals stacked horizontally
         base_delay: delay to create between the microphones in samples
-                    (if not an integer value will be rounded),
+                    (if not an integer, value will be rounded),
                     if this is positive the last sigal in the array will
                     have a delay of zero and the signal at position zero
                     will have a delay of (N-1)*base_delay (other way round
