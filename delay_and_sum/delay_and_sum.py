@@ -50,7 +50,8 @@ class DelayAndSumPlane:
         return delta_t
 
 
-    def make_rms_list(self, signals, start_angle=-90, stop_angle=90, angle_steps=1):
+    def make_rms_list(self, signals, start_angle=-90, stop_angle=90, angle_steps=1,
+                      window = False):
         """
         Perform delay & sum algorithm for a given set of microphone signals
         to compute an array of rms values for given angles (default: -90 to 90)
@@ -80,10 +81,13 @@ class DelayAndSumPlane:
         rms_values = []
         delay_if_pos = lambda n: self._num_mics - n
         delay_if_neg = lambda n: n - 1
+        w = self._sp.hann_window(signals.shape[1])
 
         # go through all angles and delay and sum
         for angle in range(start_angle, stop_angle + 1, angle_steps):
             signals_tmp = deepcopy(signals)
+            if window:
+                signals_tmp *= w
             delta_t = self.delta_t_for_angle(angle)
             delay = delta_t * self._fs
 

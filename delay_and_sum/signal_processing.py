@@ -21,6 +21,14 @@ class SignalProcessor:
         return np.sqrt( 1./len(sig) * np.square(sig).sum())
 
 
+    def hann_window(self, length):
+        """
+        Return Hann-window
+
+        length: length of the window in samples
+        """
+        return np.hanning(length)
+
     def to_db (self, val):
         """
         Computes decibels from linear value
