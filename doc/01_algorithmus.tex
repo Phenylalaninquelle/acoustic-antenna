@@ -32,5 +32,23 @@
 	Das Ausgangssignal des Arrays für einen Winkel $\alpha$ berechnet sich dann mit
 	\begin{equation}
 		s = \sqrt{\frac{1}{T} \int_{0}^{T} \sum_{n=1}^{N} p_m(t - \tau_n(\alpha))}
-		\label{eq:das_plane}
+		\label{eq:das_plane} \footnote{Möser (Hrsg.), Messtechnik der Akustik, Springer 2010, S. 366f}
 	\end{equation}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.7]{img/bsp_plot_15_beides.png}
+		\caption{Richtungsfunktion für eine Quelle bei $\alpha=15^{\circ}$ mit und ohne Gewsichtung. \\
+				 Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.}
+		\label{fig:bsp_plot}
+	\end{figure}
+	Trägt man den Effektivwert des Arraysignals über dem Winkel auf, so ergibt sich die Richtungsfunktion des Arrays. In Abbildung \ref{fig:bsp_plot} ist beispielhaft die Richtungsfunktion für eine Quelle bei $\alpha = 15^{\circ}$ dargestellt.
+	Das Maximum der Effektivwerte ist deutlich bei 15\textdegree\ erkennbar.
+
+\subsection{Gewichtung der Mikrofone}
+
+	Die Richtungsfunktion lässt sich durch eine Gewichtung der einzelnen Mikrofonsignale verschieden formen. In Abbildung \ref{fig:bsp_plot} ist im Vergleich eine Richtungsfunktion mit und ohne Gewichtung zu sehen.
+	Zur Gewichtung der Mikrofone wurde hier die Hann-Fensterfunktion verwendet. Man erkennt, dass das Hauptmaximum deutlich verbreitert wurde, während die Nebenmaxima abgesenkt wurden.
+	Allgemein ergibt die Richtungsfunktion mit Gewichtung geringere Werte als ohne.
+	Dies resultiert aus der Absenkung der einzelnen Mikrofonsignale durch die Fensterfunktion.
+	Je nach Anwendungsfall empfehlen sich verschiedene Fensterfunktionen. Sollen zum Beispiel mehrere Quellen, die eng beieinander liegen, erkannt werden, so wird ein schmaleres Hauptmaximum benötigt\footnote{Möser (Hrsg.), Messtechnik der Akustik, Springer 2010, S. 374ff}.
