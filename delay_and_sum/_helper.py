@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 from .signal_processing import SignalProcessor
 
@@ -44,19 +45,18 @@ class TestsignalGenerator:
         return np.sin(omega * n).reshape(length, 1)
 
 
-    def plane_wave_testsignals(self, num_mics, freq, length, delta_t):
+    def plane_wave_testsignals(self, num_mics, delta_t, signal):
         """
         Generate test signals for the case of a plane wave
 
         num_mics: Number of microphones in the array
-        freq: (Analog) frequency of the test sine
-        length: length of the signals
         delta_t: time difference between the signals in two neighboured mics
+        signal: mono (one channel) source signal as (length, 1) - array
 
         returns: (length, num_mics) - Numpy Array with the test signals
                  The nth column contains the signal with a delay of n*delta_t
         """
-        signals = np.concatenate([self.create_sine(freq, length) \
+        signals = np.concatenate([deepcopy(signal) \
                                   for i in range(num_mics)], 1)
         self._sp.delay_signals_with_baseDelay(signals, delta_t)
         return signals[..., ::-1]
