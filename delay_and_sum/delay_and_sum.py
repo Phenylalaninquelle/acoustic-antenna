@@ -35,11 +35,12 @@ class DelayAndSumPlane:
         return desc.format(nm=self._num_mics, dx=self._delta_x, fs=self._fs)
 
 
-    def delta_t_for_angle(self, angle):
+    def delta_t_for_angle(self, angle, in_samples=False):
         """
         Compute time delay between two adjacent microphones.
 
         angle: angle of incoming wave in degrees
+        in_samples: if True, return delay in samples
 
         returns: delta_t value as float
         """
@@ -47,7 +48,10 @@ class DelayAndSumPlane:
             raise ValueError("Angle must be in [-90, 90]!")
 
         delta_t = self._delta_x * np.sin(TO_RAD * angle) / SPEED_OF_SOUND
-        return delta_t
+        if in_samples:
+            return delta_t * self._fs
+        else:
+            return delta_t
 
 
     def make_rms_list(self, signals, start_angle=-90, stop_angle=90, angle_steps=1,
