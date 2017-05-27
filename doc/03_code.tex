@@ -1,6 +1,6 @@
 \section{Implementierung}
 	
-	Der Delay \& Sum Algorithmus wurde in der Programmiersprache Python\footnote{Version 3.5.3} implementiert. Benötigt werden neben einer entsprechenden Python-Installation auch noch die Packages "numpy"\footnote{Version 1.12.1} und "click"\footnote{Version 6.7}. Unter debianbasierten Linuxdistributionen (wie zum Beispiel Ubuntu) kann Python über die Paketquellen und numpy mit "pip" installiert werden, für Windows empfiehlt sich eine Python-Distribution wie zum Beispiel "Anaconda"\footnote{https://www.continuum.io/downloads}.
+	Der Delay \& Sum Algorithmus wurde in der Programmiersprache Python\footnote{Version 3.5.3} implementiert. Benötigt werden neben einer entsprechenden Python-Installation auch noch die Packages "numpy"\footnote{Version 1.12.1} und "click"\footnote{Version 6.7}. Unter debianbasierten Linuxdistributionen (wie zum Beispiel Ubuntu) kann Python über die Paketquellen und numpy/click mit "pip" installiert werden, für Windows empfiehlt sich eine Python-Distribution wie zum Beispiel "Anaconda"\footnote{https://www.continuum.io/downloads}.
 	
 	\subsection{Package delay\_and\_sum}
 	
@@ -14,3 +14,9 @@
 	Die Klasse \texttt{SignalProcessor} in \texttt{signal\_processing.py} stellt dafür verschiedene Methoden für die Signalverarbeitung zur Verfügung.
 	
 	Zusäzlich gibt es das \texttt{\_helper.py} Modul, das neben einer Klasse zur Testsignalerzeugung auch Konstanten wie die Schallgeschwindigkeit und Faktoren zur Umrechnung zwischen Bogenmaß und Winkel enthält.
+	
+\subsection{Bespielskript}
+
+	Das Skript \texttt{locate\_single\_source.py} liest ein Arraysignal aus einer Mehrkanal-Wav-Datei, berechnet den Winkel der aufgenommenen Quelle und zeichnet ein Diagramm mit der Richtungsfunktion.
+	Übergeben werden müssen (in dieser Reihenfolge) der Dateiname, die Anzahl der Mikrofone und die Länge des Arrays in Metern. Zusätzlich kann mit dem \texttt{-w} Flag die Gewichtung der Mikrofonsignale mit dem Hann-Fenster angewiesen werden.
+	Ein Hilfetext kann mit \texttt{locate\_single\_source.py -h} angezeigt werden.

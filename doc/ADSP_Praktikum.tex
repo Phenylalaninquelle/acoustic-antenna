@@ -83,7 +83,7 @@
 %\renewcommand{\eqref}[1]{\textup{\reftagform@{\ref{#1}}}}
 %\makeatother
 \usepackage{hyperref}
-\hypersetup{colorlinks=true, linkcolor=black,}
+\hypersetup{colorlinks=false}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PREPARE TITLE
@@ -98,11 +98,16 @@
 
 
 \begin{document}
-	\maketitle
+	%{\let\newpage\relax\maketitle}
 	
-	%\textsf{\tableofcontents}
-	
-	\newpage
+	%\newpage
+	{
+		\begin{center}
+		\blueb
+		\LARGE Akustische Antenne mit dem Delay \& Sum - Algorithmus \par
+		\centering \large Praktikum ADSP - Jan Kiene	
+		\end{center}
+	}
 	
 	\input{02_akustischeAntenne}
 	\input{01_algorithmus}
