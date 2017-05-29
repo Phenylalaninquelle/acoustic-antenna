@@ -15,6 +15,14 @@
 	Die Idee des Delay \& Sum Algorithmus ist nun, die theoretischen Verzögerungszeiten für alle Winkel $\alpha \in [-90^{\circ}, 90^{\circ}]$ zu berechnen und durch nachträgliches "inverses" Verzögern der Mikrofonsignale auszugleichen.
 	Anschließend berechnet man von diesen "invers verzögerten" Signalen den Effektivwert und sucht den Winkel, unter dem dieser maximal wurde.
 	Dieser Winkel wird dann als Schalleinfallsrichtung angenommen.
+	
+	\begin{figure}[h]
+		\begin{center}
+		\includegraphics[scale=0.25]{img/DelaySumDiagram}
+		\caption{Beispielhaftes Mikrofonarray mit 8 Mikrofonen}
+		\label{fig:das_basic}
+		\end{center}		
+	\end{figure}
 
 \subsection{Delay \& Sum für Ebene Wellen}
 	
@@ -23,7 +31,7 @@
 	Grundsätzlich strahlen "kleine" Quellen (wie zum Beispiel ein Mensch oder ein Lautsprecher) Schall kugelförmig ab. Mit zunehmender Entfernung von der Quelle ähnelt die Schallwelle jedoch immer mehr einer ebenen Welle, sodass ab einer gewissen Distanz von der Schallquelle auch die Annahme einer ebenen Wellenausbreitung getroffen werden kann.
 	
 	%Skzze ebene Wellen
-	Für ebene Wellen stellt sich der Delay \& Sum Algorithmus recht einfach dar. Trifft eine ebene Welle unter dem Winkel $\alpha$ auf das Mikrofonarray, so trifft diese zuerst auf das äußerste Mikrofon und erreicht alle anderen Mikrofone erst nach einer gewissen Verzögerungszeit $\tau_n$ (siehe Abbildung \ref{plane_waves}).
+	Für ebene Wellen stellt sich der Delay \& Sum Algorithmus recht einfach dar. Trifft eine ebene Welle unter dem Winkel $\alpha$ auf das Mikrofonarray, so trifft diese zuerst auf das äußerste Mikrofon und erreicht alle anderen Mikrofone erst nach einer gewissen Verzögerungszeit $\tau_n$.
 	Dabei ist speziell für die Annahme ebener Wellen $\tau_n = (n - 1) * \Delta t$. Die Verzögerungszeit zwischen zwei Mikrofonsignalen $\Delta t$ kann mit 
 	\begin{equation}
 		\Delta t = \frac{\Delta x}{c} = \frac{\Delta x \cdot \sin(\alpha)}{c}
@@ -40,8 +48,8 @@
 		\includegraphics[scale=0.7]{img/bsp_plot_15_beides.png}
 		\caption{Richtungsfunktion für eine Quelle bei $\alpha=15^{\circ}$ mit und ohne Gewsichtung. \\
 				 Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.}
-		\end{center}
 		\label{fig:bsp_plot}
+		\end{center}
 	\end{figure}
 	Trägt man den Effektivwert des Arraysignals über dem Winkel auf, so ergibt sich die Richtungsfunktion des Arrays. In Abbildung \ref{fig:bsp_plot} ist beispielhaft die Richtungsfunktion für eine Quelle bei $\alpha = 15^{\circ}$ dargestellt.
 	Das Maximum der Effektivwerte ist deutlich bei 15\textdegree\ erkennbar.
