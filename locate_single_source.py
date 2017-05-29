@@ -25,7 +25,6 @@ def read_signals_from_wav(filename):
 
 def main(filename, array_len, num_mics, useWin):
     s, fs = read_signals_from_wav(filename)
-    print (useWin)
     rms_list = find_angle(s, array_len, num_mics, fs, useWin)
     max_val = np.amax(rms_list)
     angle = np.argmax(rms_list) - 90
@@ -43,14 +42,15 @@ def main(filename, array_len, num_mics, useWin):
     plt.vlines(angle, 0, max_val, 'r', '--')
     plt.show()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("file",
-                    help="Wav-file containing the array signal.")
-parser.add_argument("numMics", type=int,
-                    help="Number of microphones of the array")
-parser.add_argument("arrayLength", type=float,
-                    help="Length of the microphone array in meters")
-parser.add_argument("-w", action="store_true",
-                    help="Use Hann-Window for microphone weights")
-args = parser.parse_args()
-main(args.file, args.arrayLength, args.numMics, args.w)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file",
+                        help="Wav-file containing the array signal.")
+    parser.add_argument("numMics", type=int,
+                        help="Number of microphones of the array")
+    parser.add_argument("arrayLength", type=float,
+                        help="Length of the microphone array in meters")
+    parser.add_argument("-w", action="store_true",
+                        help="Use Hann-Window for microphone weights")
+    args = parser.parse_args()
+    main(args.file, args.arrayLength, args.numMics, args.w)
