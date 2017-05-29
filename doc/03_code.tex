@@ -15,8 +15,11 @@
 	
 	Zusäzlich gibt es das \texttt{\_helper.py} Modul, das neben einer Klasse zur Testsignalerzeugung auch Konstanten wie die Schallgeschwindigkeit und Faktoren zur Umrechnung zwischen Bogenmaß und Winkel enthält.
 	
-\subsection{Bespielskript}
+\subsection{Bespielskripte}
 
 	Das Skript \texttt{locate\_single\_source.py} liest ein Arraysignal aus einer Mehrkanal-Wav-Datei, berechnet den Winkel der aufgenommenen Quelle und zeichnet ein Diagramm mit der Richtungsfunktion.
-	Übergeben werden müssen (in dieser Reihenfolge) der Dateiname, die Anzahl der Mikrofone und die Länge des Arrays in Metern. Zusätzlich kann mit dem \texttt{-w} Flag die Gewichtung der Mikrofonsignale mit dem Hann-Fenster angewiesen werden.
-	Ein Hilfetext kann mit \texttt{locate\_single\_source.py -h} angezeigt werden.
+	Übergeben werden müssen (in dieser Reihenfolge) der Dateiname, die Anzahl der Mikrofone und die Länge des Arrays in Metern. Zusätzlich kann mit dem~\texttt{-w} Flag die Gewichtung der Mikrofonsignale mit dem Hann-Fenster angewiesen werden.
+	
+	Zum Erzeugen von Testsignalen kann das Skript \texttt{generate\_planewave\_testsignal.py} verwendet werden. Das Skript benötigt (in dieser Reihenfolge) eine einkanalige Wav-Datei, die Anzahl an Mikrofonen, die Länge des Arrays und den Winkel, unter dem das Signal abgebildet werden soll.
+	
+	Ein Hilfetext kann jeweils mit dem \texttt{-h} Flag angezeigt werden.
