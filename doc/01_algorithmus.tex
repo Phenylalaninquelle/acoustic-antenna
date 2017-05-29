@@ -10,7 +10,7 @@
 		s_{sum}(t, \alpha) = \sum_{n=1}^{N} p_n(t - \tau_n(\alpha))
 	\end{equation}
 	Unter der Annahme, dass der Übertragungsweg von der Quelle zur Summierstelle (Luft, Mikrofon, Kabel) keine Signalveränderungen bewirkt, wird also das selbe Signal mit $N-1$ zeitlich verschobenen Kopien von sich selbst addiert.
-	Dadurch kommt es zu Auslöschungen und Abschwächungen, sodass generell $s_{sum}(t, \alpha=0) \ge s_{sum}(t, \alpha \ne 0)$.
+	Dadurch kommt es zu Auslöschungen und Abschwächungen, sodass generell $RMS(s_{sum}(t, \alpha=0)) \ge RMS(s_{sum}(t, \alpha \ne 0))$.
 	
 	Die Idee des Delay \& Sum Algorithmus ist nun, die theoretischen Verzögerungszeiten für alle Winkel $\alpha \in [-90^{\circ}, 90^{\circ}]$ zu berechnen und durch nachträgliches "inverses" Verzögern der Mikrofonsignale auszugleichen.
 	Anschließend berechnet man von diesen "invers verzögerten" Signalen den Effektivwert und sucht den Winkel, unter dem dieser maximal wurde.
@@ -18,7 +18,7 @@
 	
 	\begin{figure}[h]
 		\begin{center}
-		\includegraphics[scale=0.25]{img/DelaySumDiagram}
+		\includegraphics[scale=0.3]{img/DelaySumDiagram}
 		\caption{Beispielhaftes Mikrofonarray mit 8 Mikrofonen}
 		\label{fig:das_basic}
 		\end{center}		
@@ -26,8 +26,7 @@
 
 \subsection{Delay \& Sum für Ebene Wellen}
 	
-	Eine Ebene Welle zeichnet sich durch eine gerade Wellenfront aus.
-	Ein Beispiel wäre Schall, der von einer Autobahn, die konstant von Autos befahren wird, abgestrahlt wird.
+	Eine Ebene Welle zeichnet sich dadurch aus, dass ihre Wellenfront eine Ebene ist. Die Ausbreitungsrichtung ist also überall gleich.
 	Grundsätzlich strahlen "kleine" Quellen (wie zum Beispiel ein Mensch oder ein Lautsprecher) Schall kugelförmig ab. Mit zunehmender Entfernung von der Quelle ähnelt die Schallwelle jedoch immer mehr einer ebenen Welle, sodass ab einer gewissen Distanz von der Schallquelle auch die Annahme einer ebenen Wellenausbreitung getroffen werden kann.
 	
 	%Skzze ebene Wellen
@@ -43,16 +42,17 @@
 		\label{eq:das_plane} \footnote{Möser (Hrsg.), Messtechnik der Akustik, Springer 2010, S. 366f}
 	\end{equation}
 	
-	\begin{figure}[h]
-		\begin{center}
-		\includegraphics[scale=0.7]{img/bsp_plot_15_beides.png}
-		\caption{Richtungsfunktion für eine Quelle bei $\alpha=15^{\circ}$ mit und ohne Gewsichtung. \\
-				 Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.}
-		\label{fig:bsp_plot}
-		\end{center}
-	\end{figure}
 	Trägt man den Effektivwert des Arraysignals über dem Winkel auf, so ergibt sich die Richtungsfunktion des Arrays. In Abbildung \ref{fig:bsp_plot} ist beispielhaft die Richtungsfunktion für eine Quelle bei $\alpha = 15^{\circ}$ dargestellt.
 	Das Maximum der Effektivwerte ist deutlich bei 15\textdegree\ erkennbar.
+	
+	\begin{figure}[h]
+		\begin{center}
+			\includegraphics[scale=0.7]{img/bsp_plot_15_beides.png}
+			\caption{Richtungsfunktion für eine Quelle bei $\alpha=15^{\circ}$ mit und ohne Gewsichtung. \\
+				Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.}
+			\label{fig:bsp_plot}
+		\end{center}
+	\end{figure}
 
 \subsection{Gewichtung der Mikrofone}
 
