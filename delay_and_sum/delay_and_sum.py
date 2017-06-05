@@ -197,10 +197,9 @@ class DelayAndSumPointSources(DelayAndSum):
             mic_delays = np.abs(mic_delays - max_delay)
             # delay the signals accordingly
             sigs_tmp = deepcopy(signals)
-            for d, s in zip(mic_delays, sigs_tmp.T):
-                print(d)
-                self._sp.delay_signal(s, int(np.round(d)))
+            for d, s in zip(mic_delays, sigs_tmp):
+                self._sp.delay_signal(s, d)
             # sum up everything and add rms value of sum to the list
-            rms_values.append(self._sp.get_rms(sigs_tmp.sum(1)))
+            rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
 
         return self._sp.to_db(rms_values)
