@@ -147,16 +147,6 @@ class DelayAndSumPointSources(DelayAndSum):
                            fs=self.fs)
 
 
-    def max_angle(self, distance):
-        """
-        Compute the maximum absolute-wise angle that can be detected for
-        sound sources at the given distance
-
-        distance: distance to source plane in meters
-        """
-        return np.arctan(self.length / distance) * TO_DEG
-
-
     def make_rms_list(self, signals, distance):
         """
         Compute RMS values for all valid positions on the sources
@@ -173,7 +163,8 @@ class DelayAndSumPointSources(DelayAndSum):
             msg = "Distance to source plane must be bigger than zero!"
             raise ValueError(msg)
 
-        max_angle = int(np.round(self.max_angle(distance)))
+        max_angle = int(np.round(PointSourceHelper.max_angle(self.length,
+                                                             distance)))
         angles = np.arange(-max_angle, max_angle + 1)
         mic_positions = PointSourceHelper.mic_positions(self.length,
                                                         self.delta_x)

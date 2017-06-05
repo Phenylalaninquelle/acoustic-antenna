@@ -47,7 +47,7 @@ class PointSourceHelper:
         return np.array([np.tan(angle * TO_RAD) * dist, dist])
 
 
-    def mic_delays(mic_positions, src_position, fs):
+    def mic_delays(mic_positions, src_position, fs, invert=True):
         """
         Compute inverse delay values with given microphone distances
 
@@ -63,10 +63,22 @@ class PointSourceHelper:
         mic_min = np.amin(mic_dists)
         mic_dists -= mic_min
         mic_delays = mic_dists / SPEED_OF_SOUND * fs
-        # invert delays
-        max_delay = np.amax(mic_delays)
-        mic_delays = np.abs(mic_delays - max_delay)
+        # invert delays if requested
+        if invert:
+            max_delay = np.amax(mic_delays)
+            mic_delays = np.abs(mic_delays - max_delay)
         return mic_delays
+
+
+    def max_angle(length, distance):
+        """
+        Compute the maximum absolute-wise angle that can be detected for
+        sound sources at the given distance
+
+        length: length of mic array
+        distance: distance to source plane in meters
+        """
+        return np.arctan(length / distance) * TO_DEG
 
 
 class TestsignalGenerator:
@@ -122,3 +134,33 @@ class TestsignalGenerator:
                                   for i in range(num_mics)], 1)
         self._sp.delay_signals_with_baseDelay(signals, delta_t)
         return signals[..., ::-1]
+
+
+    def point_source_testsignal(self, angle, distance, das, signal):
+        """
+        Generate a test signal using a point source model
+
+        angle: angle at which the point source resides
+        distance: distance from source plane to array
+        das: DelayAndSumPointSources object with the array data to use
+        signal: mono (one channel) source signal as (length, 1) - array
+
+        returns:
+        """
+        max_angle = PointSourceHelper.max_angle(das.length, distance)
+        if angle > max_angle or angle < -max_angle:
+            raise ValueError("The given angle cannot be detected by the given array parameters.")
+
+        signals = np.concatenate([deepcopy(signal) \
+                                  for i in range(das.num_mics)], 1)
+
+        src_pos = PointSourceHelper.src_position(angle, distance)
+        mic_positions = PointSourceHelper.mic_positions(das.length, das.delta_x)
+        # get the delays of the mic signals for this position
+        mic_delays = PointSourceHelper.mic_delays(mic_positions,src_pos,
+                                                  das.fs, invert=False)
+
+        for s, d in zip(signals.T, mic_delays):
+            self._sp.delay_signal(s, np.round(d))
+
+        return signals
