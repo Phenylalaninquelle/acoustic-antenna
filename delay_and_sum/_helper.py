@@ -2,7 +2,6 @@ import numpy as np
 from copy import deepcopy
 
 from .signal_processing import SignalProcessor
-from .delay_and_sum import DelayAndSumPointSources
 
 SPEED_OF_SOUND = 340.
 TO_RAD = np.pi / 180
@@ -30,7 +29,7 @@ class PointSourceHelper:
         """
         start_x = length / 2
         stop_x = length / 2 - delta_x / 2
-        mic_x = np.arange(start_x, stop_x, delta_x)
+        mic_x = np.arange(start_x, -stop_x, -delta_x)
         mic_y = np.array([0] * len(mic_x))
         mic_positions = np.vstack([mic_x, mic_y]).T
         return mic_positions
@@ -68,7 +67,7 @@ class PointSourceHelper:
         max_delay = np.amax(mic_delays)
         mic_delays = np.abs(mic_delays - max_delay)
         return mic_delays
-        
+
 
 class TestsignalGenerator:
     """
@@ -123,24 +122,3 @@ class TestsignalGenerator:
                                   for i in range(num_mics)], 1)
         self._sp.delay_signals_with_baseDelay(signals, delta_t)
         return signals[..., ::-1]
-
-
-    def point_source_testsignal(self, das, angle, distance, signal):
-        """
-        Generate a test signal using a point source model
-
-        das: DelayAndSumPointSources object with the array data to use
-        angle: angle at which the point source resides
-        distance: distance from source plane to array
-        signal: mono (one channel) source signal as (length, 1) - array
-
-        returns:
-        """
-        max_angle = das.max_angle(distance)
-        if angle > max_angle or angle < -max_angle:
-            raise ValueError("The given angle cannot be detected by the given array parameters.")
-
-        signals = np.concatenate([deepcopy(signal) \
-                                  for i in range(num_mics)], 1)
-
-        src_pos = np.tan(angle * TO_RAD) * distance

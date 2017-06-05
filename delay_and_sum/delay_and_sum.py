@@ -176,18 +176,17 @@ class DelayAndSumPointSources(DelayAndSum):
         max_angle = int(np.round(self.max_angle(distance)))
         angles = np.arange(-max_angle, max_angle + 1)
         mic_positions = PointSourceHelper.mic_positions(self.length,
-                                                        self.delta_x,
-                                                        distance)
+                                                        self.delta_x)
 
         rms_values = []
         for ang in angles:
-            src_pos = PointSourceHelper.source_position(ang, distance)
-            mic_delays = PointSourceHelper.mic_delays(mic_positions, src_pos)
+            src_pos = PointSourceHelper.src_position(ang, distance)
+            mic_delays = PointSourceHelper.mic_delays(mic_positions, src_pos, self.fs)
             # delay the signals accordingly
             sigs_tmp = deepcopy(signals)
-            for d, s in zip(mic_delays, sigs_tmp):
-                self._sp.delay_signal(s, d)
+            for d, s in zip(mic_delays, sigs_tmp.T):
+                self._sp.delay_signal(s, np.round(d))
             # sum up everything and add rms value of sum to the list
-            rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
+            rms_values.append(self._sp.get_rms(sigs_tmp.sum(1)))
 
         return self._sp.to_db(rms_values)
