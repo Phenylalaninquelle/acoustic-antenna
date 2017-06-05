@@ -2,7 +2,7 @@ import numpy as np
 from copy import deepcopy
 
 from .signal_processing import SignalProcessor
-from ._helper import SPEED_OF_SOUND, TO_RAD, TO_DEG
+from ._helper import SPEED_OF_SOUND, TO_RAD, TO_DEG, PointSourceHelper
 
 
 class DelayAndSum:
@@ -135,7 +135,7 @@ class DelayAndSumPointSources(DelayAndSum):
                                                       num_mics,
                                                       fs,
                                                       signal_processor)
-        self._length = self.delta_x * (self.num_mics - 1)
+        self.length = self.delta_x * (self.num_mics - 1)
 
 
     def __repr__(self):
@@ -154,7 +154,7 @@ class DelayAndSumPointSources(DelayAndSum):
 
         distance: distance to source plane in meters
         """
-        return np.arctan(self._length / distance) * TO_DEG
+        return np.arctan(self.length / distance) * TO_DEG
 
 
     def make_rms_list(self, signals, distance):
@@ -175,26 +175,14 @@ class DelayAndSumPointSources(DelayAndSum):
 
         max_angle = int(np.round(self.max_angle(distance)))
         angles = np.arange(-max_angle, max_angle + 1)
-        mic_x = np.arange(self._length / 2,
-                          -self._length / 2 - self.delta_x / 2,
-                          -self.delta_x)
-        mic_positions = np.vstack([mic_x,
-                                  np.array([distance] * len(mic_x))]).T
+        mic_positions = PointSourceHelper.mic_positions(self.length,
+                                                        self.delta_x,
+                                                        distance)
 
         rms_values = []
         for ang in angles:
-            # compute source position from angle
-            src_pos = np.array([np.tan(ang * TO_RAD) * distance, 0])
-            # compute mic distances as length of vector difference to source position
-            mic_distances = np.linalg.norm(mic_positions - src_pos, axis=1)
-            # subtract the global minimum distance from all distances
-            mic_min = np.amin(mic_distances)
-            mic_distances -= mic_min
-            # get delay (in samples!!)
-            mic_delays = mic_distances / SPEED_OF_SOUND * self.fs
-            # calculate the inverse delays for this constellation
-            max_delay = np.amax(mic_delays)
-            mic_delays = np.abs(mic_delays - max_delay)
+            src_pos = PointSourceHelper.source_position(ang, distance)
+            mic_delays = PointSourceHelper.mic_delays(mic_positions, src_pos)
             # delay the signals accordingly
             sigs_tmp = deepcopy(signals)
             for d, s in zip(mic_delays, sigs_tmp):
