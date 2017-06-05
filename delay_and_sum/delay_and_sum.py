@@ -2,18 +2,19 @@ import numpy as np
 from copy import deepcopy
 
 from .signal_processing import SignalProcessor
-from ._helper import SPEED_OF_SOUND, TO_RAD
+from ._helper import SPEED_OF_SOUND, TO_RAD, TO_DEG
 
-class DelayAndSumPlane:
+
+class DelayAndSum:
     """
-    Offers methods for the delay and sum algorithm to realise
-    an acoustical antenna. This implementation assumes the
-    incoming sound wave to be a plane wave.
+    Base class for the delay and sum algorithm implementations.
+
+    This is not intended to be instanciated just use the child classes.
     """
 
     def __init__(self, delta_x, num_mics, fs, signal_processor=None):
         """
-        Initialise new DelayAndSumPlane object.
+        Initialise new DelayAndSum object.
 
         delta_x: distance between the microphones of the array izn meters
         num_mics: number of microphones in the array
@@ -29,10 +30,31 @@ class DelayAndSumPlane:
         else:
             self._sp = signal_processor
 
+    def __repr__(self):
+        desc = "<{cls} Object with {nm} mics with distance of {dx}, fs: {fs}>"
+        return desc
+
+
+class DelayAndSumPlane(DelayAndSum):
+    """
+    Offers methods for the delay and sum algorithm to realise
+    an acoustical antenna. This implementation assumes the
+    incoming sound wave to be a plane wave.
+    """
+
+    def __init__(self, delta_x, num_mics, fs, signal_processor=None):
+        super(DelayAndSumPlane, self).__init__(delta_x,
+                                               num_mics,
+                                               fs,
+                                               signal_processor)
 
     def __repr__(self):
-        desc = "<DelayAndSum Object with {nm} mics with distance of {dx}, fs: {fs}>"
-        return desc.format(nm=self._num_mics, dx=self._delta_x, fs=self._fs)
+        desc = super().__repr__()
+        classname = self.__class__.__name__
+        return desc.format(cls=classname,
+                           nm=self._num_mics,
+                           dx=self._delta_x,
+                           fs=self._fs)
 
 
     def delta_t_for_angle(self, angle, in_samples=False):
@@ -70,7 +92,6 @@ class DelayAndSumPlane:
         returns: list of rms values for the angles from <start_angle> to
                  <stop_angle> in <angle_steps>
         """
-        L = signals.shape[0]
         N = signals.shape[1]
 
         if N != self._num_mics:
@@ -99,5 +120,87 @@ class DelayAndSumPlane:
 
             # sum up everything and add rms value of sum to the list
             rms_values.append(self._sp.get_rms(signals_tmp.sum(1)))
+
+        return self._sp.to_db(rms_values)
+
+class DelayAndSumPointSources(DelayAndSum):
+    """
+    Offers methods for the delay and sum algorithm to realise
+    an acoustical antenna. This class handles point sources
+    arranged on a plane in front of the mic array.
+    """
+
+    def __init__(self, delta_x, num_mics, fs, signal_processor=None):
+        super(DelayAndSumPointSources, self).__init__(delta_x,
+                                                      num_mics,
+                                                      fs,
+                                                      signal_processor)
+        self._length = self._delta_x * (self._num_mics - 1)
+
+
+    def __repr__(self):
+        desc = super().__repr__()
+        classname = self.__class__.__name__
+        return desc.format(cls=classname,
+                           nm=self._num_mics,
+                           dx=self._delta_x,
+                           fs=self._fs)
+
+
+    def max_angle(self, distance):
+        """
+        Compute the maximum absolute-wise angle that can be detected for
+        sound sources at the given distance
+
+        distance: distance to source plane in meters
+        """
+        return np.arctan(self._length / distance) * TO_DEG
+
+
+    def make_rms_list(self, signals, distance):
+        """
+        Compute RMS values for all valid positions on the sources
+        positions plane.
+        """
+        N = signals.shape[1]
+
+        if N != self._num_mics:
+            msg = "Number of given signals must equal the specified number of" \
+            "microphones({}, given: {})"
+            raise ValueError(msg.format(self._num_mics, N))
+
+        if distance <= 0:
+            msg = "Distance to source plane must be bigger than zero!"
+            raise ValueError(msg)
+
+        max_angle = int(np.round(self.max_angle(distance)))
+        angles = np.arange(-max_angle, max_angle + 1)
+        mic_x = np.arange(self._length / 2,
+                          -self._length / 2 - self._delta_x / 2,
+                          -self._delta_x)
+        mic_positions = np.vstack([mic_x,
+                                  np.array([distance] * len(mic_x))]).T
+
+        rms_values = []
+        for ang in angles:
+            # compute source position from angle
+            src_pos = np.array([np.tan(ang * TO_RAD) * distance, 0])
+            # compute mic distances as length of vector difference to source position
+            mic_distances = np.linalg.norm(mic_positions - src_pos, axis=1)
+            # subtract the global minimum distance from all distances
+            mic_min = np.amin(mic_distances)
+            mic_distances -= mic_min
+            # get delay (in samples!!)
+            mic_delays = mic_distances / SPEED_OF_SOUND * self._fs
+            # calculate the inverse delays for this constellation
+            max_delay = np.amax(mic_delays)
+            mic_delays = np.abs(mic_delays - max_delay)
+            # delay the signals accordingly
+            sigs_tmp = deepcopy(signals)
+            for d, s in zip(mic_delays, sigs_tmp.T):
+                print(d)
+                self._sp.delay_signal(s, int(np.round(d)))
+            # sum up everything and add rms value of sum to the list
+            rms_values.append(self._sp.get_rms(sigs_tmp.sum(1)))
 
         return self._sp.to_db(rms_values)
