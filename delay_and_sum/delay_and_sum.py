@@ -22,9 +22,9 @@ class DelayAndSum:
         signal_processor: SignalProcessor object,
                           if not given, create new one
         """
-        self._delta_x = delta_x
-        self._num_mics = num_mics
-        self._fs = fs
+        self.delta_x = delta_x
+        self.num_mics = num_mics
+        self.fs = fs
         if signal_processor is None:
             self._sp = SignalProcessor()
         else:
@@ -52,9 +52,9 @@ class DelayAndSumPlane(DelayAndSum):
         desc = super().__repr__()
         classname = self.__class__.__name__
         return desc.format(cls=classname,
-                           nm=self._num_mics,
-                           dx=self._delta_x,
-                           fs=self._fs)
+                           nm=self.num_mics,
+                           dx=self.delta_x,
+                           fs=self.fs)
 
 
     def delta_t_for_angle(self, angle, in_samples=False):
@@ -69,9 +69,9 @@ class DelayAndSumPlane(DelayAndSum):
         if angle < -90 or angle > 90:
             raise ValueError("Angle must be in [-90, 90]!")
 
-        delta_t = self._delta_x * np.sin(TO_RAD * angle) / SPEED_OF_SOUND
+        delta_t = self.delta_x * np.sin(TO_RAD * angle) / SPEED_OF_SOUND
         if in_samples:
-            return delta_t * self._fs
+            return delta_t * self.fs
         else:
             return delta_t
 
@@ -94,17 +94,17 @@ class DelayAndSumPlane(DelayAndSum):
         """
         N = signals.shape[1]
 
-        if N != self._num_mics:
+        if N != self.num_mics:
             msg = "Number of given signals must equal the specified number of" \
                   "microphones({}, given: {})"
-            raise ValueError(msg.format(self._num_mics, N))
+            raise ValueError(msg.format(self.num_mics, N))
 
         if start_angle > stop_angle or stop_angle - start_angle < angle_steps:
             raise ValueError("Given angle range not valid")
 
 
         rms_values = []
-        delay_if_pos = lambda n: self._num_mics - n
+        delay_if_pos = lambda n: self.num_mics - n
         delay_if_neg = lambda n: n - 1
         w = self._sp.hann_window(signals.shape[1])
 
@@ -114,7 +114,7 @@ class DelayAndSumPlane(DelayAndSum):
             if window:
                 signals_tmp *= w
             delta_t = self.delta_t_for_angle(angle)
-            delay = delta_t * self._fs
+            delay = delta_t * self.fs
 
             self._sp.delay_signals_with_baseDelay(signals_tmp, delay)
 
@@ -135,16 +135,16 @@ class DelayAndSumPointSources(DelayAndSum):
                                                       num_mics,
                                                       fs,
                                                       signal_processor)
-        self._length = self._delta_x * (self._num_mics - 1)
+        self._length = self.delta_x * (self.num_mics - 1)
 
 
     def __repr__(self):
         desc = super().__repr__()
         classname = self.__class__.__name__
         return desc.format(cls=classname,
-                           nm=self._num_mics,
-                           dx=self._delta_x,
-                           fs=self._fs)
+                           nm=self.num_mics,
+                           dx=self.delta_x,
+                           fs=self.fs)
 
 
     def max_angle(self, distance):
@@ -164,10 +164,10 @@ class DelayAndSumPointSources(DelayAndSum):
         """
         N = signals.shape[1]
 
-        if N != self._num_mics:
+        if N != self.num_mics:
             msg = "Number of given signals must equal the specified number of" \
             "microphones({}, given: {})"
-            raise ValueError(msg.format(self._num_mics, N))
+            raise ValueError(msg.format(self.num_mics, N))
 
         if distance <= 0:
             msg = "Distance to source plane must be bigger than zero!"
@@ -176,8 +176,8 @@ class DelayAndSumPointSources(DelayAndSum):
         max_angle = int(np.round(self.max_angle(distance)))
         angles = np.arange(-max_angle, max_angle + 1)
         mic_x = np.arange(self._length / 2,
-                          -self._length / 2 - self._delta_x / 2,
-                          -self._delta_x)
+                          -self._length / 2 - self.delta_x / 2,
+                          -self.delta_x)
         mic_positions = np.vstack([mic_x,
                                   np.array([distance] * len(mic_x))]).T
 
@@ -191,7 +191,7 @@ class DelayAndSumPointSources(DelayAndSum):
             mic_min = np.amin(mic_distances)
             mic_distances -= mic_min
             # get delay (in samples!!)
-            mic_delays = mic_distances / SPEED_OF_SOUND * self._fs
+            mic_delays = mic_distances / SPEED_OF_SOUND * self.fs
             # calculate the inverse delays for this constellation
             max_delay = np.amax(mic_delays)
             mic_delays = np.abs(mic_delays - max_delay)
