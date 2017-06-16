@@ -147,6 +147,10 @@ class DelayAndSumPointSources(DelayAndSum):
                            fs=self.fs)
 
 
+    def max_angle(self, distance):
+        return int(np.round(PointSourceHelper.max_angle(self.length, distance)))
+
+
     def make_rms_list(self, signals, distance):
         """
         Compute RMS values for all valid positions on the sources
@@ -163,8 +167,7 @@ class DelayAndSumPointSources(DelayAndSum):
             msg = "Distance to source plane must be bigger than zero!"
             raise ValueError(msg)
 
-        max_angle = int(np.round(PointSourceHelper.max_angle(self.length,
-                                                             distance)))
+        max_angle = self.max_angle(distance)
         angles = np.arange(-max_angle, max_angle + 1)
         mic_positions = PointSourceHelper.mic_positions(self.length,
                                                         self.delta_x)

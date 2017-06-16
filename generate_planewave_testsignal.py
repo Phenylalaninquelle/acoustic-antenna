@@ -31,13 +31,13 @@ def write_signal(filename, signal, fs):
         msg = "File {} already exists. Overwrite? (y/n)"
         choice = input(msg.format(filename))
         do_overwrite = {'y': True,
-                   'yes': True,
-                   'j': True,
-                   'ja': True,
-                   'n': False,
-                   'no': False,
-                   'nein': False}
-        if not do_overwrite[choice]:
+                        'yes': True,
+                        'j': True,
+                        'ja': True,
+                        'n': False,
+                        'no': False,
+                        'nein': False}
+        if not do_overwrite[choice.lower()]:
             print("Abort!")
             return
 

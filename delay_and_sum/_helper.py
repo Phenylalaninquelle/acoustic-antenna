@@ -28,8 +28,8 @@ class PointSourceHelper:
         returns: (N, 2) - array with the microphone position vectors
         """
         start_x = length / 2
-        stop_x = length / 2 - delta_x / 2
-        mic_x = np.arange(start_x, -stop_x, -delta_x)
+        stop_x = - length / 2 - delta_x / 2
+        mic_x = np.arange(start_x, stop_x, -delta_x)
         mic_y = np.array([0] * len(mic_x))
         mic_positions = np.vstack([mic_x, mic_y]).T
         return mic_positions
@@ -39,7 +39,7 @@ class PointSourceHelper:
         """
         Compute source position vector
 
-        angle: angle of the source to the normal vector of the array
+        angle: angle of the source to the normal vector of the arrayin degrees
         dist: distance to source plane in meters
 
         returns: (1, 2) - array with the source position
