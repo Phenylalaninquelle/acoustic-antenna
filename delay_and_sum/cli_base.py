@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import soundfile as sf
 import numpy as np
+import sys
 
 class CliHandler:
     """
@@ -32,7 +33,14 @@ class CliHandler:
 
 
     def read_signals_from_wav(self, filename):
-        return sf.read(filename)
+        try:
+            s, fs = sf.read(filename)
+            return s, fs
+        except RuntimeError as e:
+            msg = 'An error occured while reading the file {}:\n"{}"'
+            print(msg.format(filename, str(e)))
+            sys.exit()
+
 
 
     def main():
