@@ -22,7 +22,7 @@ class CliPlaneHandler(CliHandler):
         s, fs = self.read_signals_from_wav(filename)
         das = DelayAndSumPointSources(dx, num_mics, fs)
         self._max_angle = das.max_angle(dist)
-        rms_list = das.make_rms_list(s, dist)
+        rms_list = das.make_rms_list(s, dist, use_win)
         self.plot_results(self._max_angle, rms_list)
 
 

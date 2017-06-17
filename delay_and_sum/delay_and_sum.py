@@ -77,7 +77,7 @@ class DelayAndSumPlane(DelayAndSum):
 
 
     def make_rms_list(self, signals, start_angle=-90, stop_angle=90, angle_steps=1,
-                      window = False):
+                      window=False):
         """
         Perform delay & sum algorithm for a given set of microphone signals
         to compute an array of rms values for given angles (default: -90 to 90)
@@ -151,7 +151,7 @@ class DelayAndSumPointSources(DelayAndSum):
         return int(np.round(PointSourceHelper.max_angle(self.length, distance)))
 
 
-    def make_rms_list(self, signals, distance):
+    def make_rms_list(self, signals, distance, window=False):
         """
         Compute RMS values for all valid positions on the sources
         positions plane.
@@ -173,11 +173,14 @@ class DelayAndSumPointSources(DelayAndSum):
                                                         self.delta_x)
 
         rms_values = []
+        w = self._sp.hann_window(signals.shape[1])
         for ang in angles:
             src_pos = PointSourceHelper.src_position(ang, distance)
             mic_delays = PointSourceHelper.mic_delays(mic_positions, src_pos, self.fs)
             # delay the signals accordingly
             sigs_tmp = deepcopy(signals)
+            if window:
+                sigs_tmp *= w
             for d, s in zip(mic_delays, sigs_tmp.T):
                 self._sp.delay_signal(s, np.round(d))
             # sum up everything and add rms value of sum to the list
