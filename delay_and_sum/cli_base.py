@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import soundfile as sf
 import numpy as np
 import sys
+import os
 
 class CliHandler:
     """
-    Static namespace class for cli handling
+    Base class for cli handler
     """
 
     def __init__(self):
@@ -46,6 +47,34 @@ class CliHandler:
             msg = 'An error occured while reading the file {}:\n"{}"'
             print(msg.format(filename, str(e)))
             sys.exit()
+
+    def write_signal_to_wav(self, filename, signal, fs):
+        """
+        Safely write an audio signal to a .wav file.
+        If the file already exists the user is asked before the file is overwritten.
+        An error during writing terminates the programm
+
+        filename: path to write to
+        signal: signal as (L x c) numpy array, with L begin the length of the signal
+                and c being the channel count of the signal
+        fs: sampling rate
+        """
+        if os.path.exists(filename):
+            msg = "File {} already exists. Overwrite? (y/n)"
+            choice = input(msg.format(filename))
+            do_overwrite = {'y': True, 'yes': True, 'j': True, 'ja': True,
+                            'n': False, 'no': False, 'nein': False}
+            if not do_overwrite[choice.lower()]:
+                print("Writing aborted!")
+                return
+
+        try:
+            sf.write(filename, signal, fs)
+        except RuntimeError as e:
+            msg = 'An error occured while wrting the file {}:\n"{}"'
+            print(msg.format(filename, str(e)))
+            sys.exit()
+
 
     def main():
         raise NotImplementedError("This needs to be overwritten in subclass")
