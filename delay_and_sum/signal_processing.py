@@ -9,7 +9,6 @@ class SignalProcessor:
     def __init__(self):
         pass
 
-
     def get_rms(self, sig):
         """
         Compute root mean square value for a given signal
@@ -19,7 +18,6 @@ class SignalProcessor:
         returns: the rms value of the signal
         """
         return np.sqrt( 1./len(sig) * np.square(sig).sum())
-
 
     def hann_window(self, length):
         """
@@ -34,7 +32,6 @@ class SignalProcessor:
         Computes decibels from linear value
         """
         return 20 * np.log10(val)
-
 
     def delay_signal(self, signal, delay):
         """
@@ -73,10 +70,9 @@ class SignalProcessor:
         elif base_delay < 0:
             delay_for_mic = lambda n: n - 1
         else:
-            # for angle of zero no delay is needed
+            # if delay is zero nothing has to be done
             return
 
         for n in range(1, num_mics + 1):
-            # compute delay in samples
             delay = np.round(delay_for_mic(n) * base_delay)
             self.delay_signal(signals[:,n - 1], np.abs(delay))

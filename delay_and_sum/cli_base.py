@@ -11,7 +11,6 @@ class CliHandler:
     def __init__(self):
         raise NotImplementedError("Subclass this!!")
 
-
     def plot_results(self, max_ang, rms_list):
         """
         Plot the directional function of a microphone array
@@ -31,8 +30,15 @@ class CliHandler:
         plt.vlines(src_angle, 0, max_val, 'r', '--')
         plt.show()
 
-
     def read_signals_from_wav(self, filename):
+        """
+        Safely read an audio signal from a .wav file.
+        If an error occurs while reading the file the whole program is terminated.
+
+        filename: path of the file
+
+        returns: signal and sampling rate
+        """
         try:
             s, fs = sf.read(filename)
             return s, fs
@@ -40,8 +46,6 @@ class CliHandler:
             msg = 'An error occured while reading the file {}:\n"{}"'
             print(msg.format(filename, str(e)))
             sys.exit()
-
-
 
     def main():
         raise NotImplementedError("This needs to be overwritten in subclass")

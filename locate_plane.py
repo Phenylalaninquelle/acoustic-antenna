@@ -12,10 +12,12 @@ from delay_and_sum import DelayAndSumPlane
 from delay_and_sum.cli_base import CliHandler
 
 class CliPlaneHandler(CliHandler):
+    """
+    Command line handler class for plane wave case.
+    """
 
     def __init__(self):
         self._max_angle = 90
-
 
     def main(self, filename, num_mics, arr_len, use_win):
         dx = arr_len / (num_mics - 1)

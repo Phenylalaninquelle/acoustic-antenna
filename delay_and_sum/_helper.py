@@ -13,10 +13,10 @@ class PointSourceHelper:
     Helper class that encapsulates some computations for the point source
     generation/computation
     """
+
     def __new__(cls, *args, **kwargs):
         raise NotImplementedError("This class is not meant to be instantiated!\n" \
                                   "Just use its static methods.")
-
 
     def mic_positions(length, delta_x):
         """
@@ -28,12 +28,11 @@ class PointSourceHelper:
         returns: (N, 2) - array with the microphone position vectors
         """
         start_x = length / 2
-        stop_x = - length / 2 - delta_x / 2
+        stop_x = -length / 2 - delta_x / 2
         mic_x = np.arange(start_x, stop_x, -delta_x)
         mic_y = np.array([0] * len(mic_x))
         mic_positions = np.vstack([mic_x, mic_y]).T
         return mic_positions
-
 
     def src_position(angle, dist):
         """
@@ -45,7 +44,6 @@ class PointSourceHelper:
         returns: (1, 2) - array with the source position
         """
         return np.array([np.tan(angle * TO_RAD) * dist, dist])
-
 
     def mic_delays(mic_positions, src_position, fs, invert=True):
         """
@@ -68,7 +66,6 @@ class PointSourceHelper:
             max_delay = np.amax(mic_delays)
             mic_delays = np.abs(mic_delays - max_delay)
         return mic_delays
-
 
     def max_angle(length, distance):
         """
@@ -98,7 +95,6 @@ class TestsignalGenerator:
         else:
             self._sp = signal_processor
 
-
     def create_sine(self, freq, length, fs=48000):
         """
         Create sine function array.
@@ -112,12 +108,9 @@ class TestsignalGenerator:
         if freq < 0 or freq >= fs/2.:
             raise ValueError("Frequency must be 0 <= freq < fs/2!")
 
-        # compute discrete frequency for used samplerate
         omega = 2 * np.pi * freq / fs
-
         n = np.arange(0, length, 1)
         return np.sin(omega * n).reshape(length, 1)
-
 
     def plane_wave_testsignals(self, num_mics, delta_t, signal):
         """
@@ -135,7 +128,6 @@ class TestsignalGenerator:
         self._sp.delay_signals_with_baseDelay(signals, delta_t)
         return signals[..., ::-1]
 
-
     def point_source_testsignal(self, angle, distance, das, signal):
         """
         Generate a test signal using a point source model
@@ -149,16 +141,14 @@ class TestsignalGenerator:
         """
         max_angle = PointSourceHelper.max_angle(das.length, distance)
         if angle > max_angle or angle < -max_angle:
-            raise ValueError("The given angle cannot be detected by the given array parameters.")
+            raise ValueError("The given angle is too big for the array.")
 
         signals = np.concatenate([deepcopy(signal) \
                                   for i in range(das.num_mics)], 1)
 
         src_pos = PointSourceHelper.src_position(angle, distance)
-        mic_positions = PointSourceHelper.mic_positions(das.length, das.delta_x)
-        # get the delays of the mic signals for this position
-        mic_delays = PointSourceHelper.mic_delays(mic_positions,src_pos,
-                                                  das.fs, invert=False)
+        mic_pos = PointSourceHelper.mic_positions(das.length, das.delta_x)
+        mic_delays = PointSourceHelper.mic_delays(mic_pos, src_pos, das.fs, invert=False)
 
         for s, d in zip(signals.T, mic_delays):
             self._sp.delay_signal(s, np.round(d))

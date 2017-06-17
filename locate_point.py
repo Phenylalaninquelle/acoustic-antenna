@@ -11,11 +11,13 @@ import numpy as np
 from delay_and_sum import DelayAndSumPointSources
 from delay_and_sum.cli_base import CliHandler
 
-class CliPlaneHandler(CliHandler):
+class CliPointHandler(CliHandler):
+    """
+    Command line handler class for the point source case
+    """
 
     def __init__(self):
         self._max_angle = None
-
 
     def main(self, filename, num_mics, arr_len, dist, use_win):
         dx = arr_len / (num_mics - 1)
@@ -39,5 +41,5 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--window", action="store_true",
                         help="Use Hann-Window for microphone weights")
     args = parser.parse_args()
-    handler = CliPlaneHandler()
+    handler = CliPointHandler()
     handler.main(args.file, args.numMics, args.arrayLength, args.distance, args.window)
