@@ -19,7 +19,7 @@
 	\begin{figure}[h]
 		\begin{center}
 		\includegraphics[scale=0.3]{img/DelaySumDiagram}
-		\caption{Beispielhaftes Mikrofonarray mit 8 Mikrofonen}
+		\caption{Beispielhaftes Mikrofonarray mit 8 Mikrofonen mit einer Schalquelle, die eine ebene Welle aus Richtung $\alpha$ emittiert.}
 		\label{fig:das_basic}
 		\end{center}		
 	\end{figure}
@@ -48,11 +48,55 @@
 	\begin{figure}[h]
 		\begin{center}
 			\includegraphics[scale=0.7]{img/bsp_plot_15_beides.png}
+			\captionsetup{justification=centering}
 			\caption{Richtungsfunktion für eine Quelle bei $\alpha=15^{\circ}$ mit und ohne Gewsichtung. \\
-				Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.}
+				Das Quellsignal ist ein Sinus mit $f=1000Hz$, das Array hat 20 Mikrofone mit $\Delta x = 0.2m$.\\
+				Zum Einsatz kam der Algorithmus für ebene Wellen.}
 			\label{fig:bsp_plot}
 		\end{center}
 	\end{figure}
+
+\subsection{Algorithmus für Kugelwellen}
+
+	\begin{figure}[h]
+		\begin{center}
+			\includegraphics[scale=0.3]{img/PointSourceDiagram}
+			\captionsetup{justification=centering}
+			\caption{Situation für Punktschallquellen: Alle möglichen Quellpositionen liegen auf einer Gerade im Abstand $d$ vor dem Mikrofonarray}
+		\end{center}
+	\end{figure}
+
+	Die meisten realen Schallquellen strahlen Schall kugelförmig ab. Dadurch verkompliziert sich die Berechnung der inversen Delays. Da der Abstand der Quelle zur Arrayachse $d$ für die Berechnung eine Rolle spielt, muss dieser bekannt sein. Der Algorithmus "probiert" dann wieder eine Reihe von Winkeln durch, wobei sich für jeden Winkel ein Punkt $\vec{p}_{\alpha}$ auf einer zur Arrayachse parallelen Geraden im Abstand $d$ mit
+	\begin{equation}\vec{p}_{\alpha} = 
+		\begin{pmatrix}
+			\tan(\alpha) * d \\
+			d
+		\end{pmatrix}
+	\end{equation}
+	ergibt. Sollte sich eine Quelle dort befinden, so ist ihre Entfernung zum Mikrofon $m_n$
+	\begin{equation}
+		r_n = \lvert \vec{p}_{\alpha} - \vec{p}_{n} \rvert
+	\end{equation}
+	mit
+	\begin{equation}
+		\vec{p}_n =
+		\begin{pmatrix}
+			\frac{L}{2} - \Delta x \cdot (n - 1) \\
+			0
+		\end{pmatrix}
+	\end{equation}
+	wobei $L$ die Länge des Arrays ist. Die Zeit $\tau_{\alpha, n}$, die eine Schallwelle braucht, um diesen Abstand zurückzulegen kann mit $\tau_{\alpha, n} = \frac{r_n}{c}$ berechnet werden. Werden alle $\tau_{\alpha, n}$ entsprechend ausgeglichen, so ergibt sich für die tatsächliche Quellenposition (beziehungswese für den Winkel, der dieser entspricht) wieder ein Maximum im Effektivwert des Summensignals aller Mikrofone. Es kann so wie für die Annahme ebener Wellen eine Richtungsfunktion bestimmt werden.
+	
+	Ein wichtiger Unterschied zum Algorithmus für ebene Wellen besteht darin, dass nicht mehr alle Werte in $[-90^{\circ}, 90^{\circ}]$ für $\alpha$ erlaubt sind, da für betraglich größere Winkel das betrachtete Stück der Quellengerade unendlich lang wird. In der vorliegenden Implementierung wird deshalb ein maximaler Betrag für $\alpha$ eingeführt, der einer Quellenposition von 
+	\begin{equation}
+		\vec{p}_q = 
+	\begin{pmatrix}
+		\pm L \\
+		d
+	\end{pmatrix}
+	\end{equation}
+	entspricht. Damit geht einher, dass der erlaubte Wertebereich von $\alpha$ bei größeren Entfernung zur Quelle kleiner wird.
+	
 
 \subsection{Gewichtung der Mikrofone}
 
