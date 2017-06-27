@@ -1,8 +1,7 @@
 \section{Delay \& Sum Algorithmus}
 
-	Der Delay \& Sum Algorithmus ist eine Möglichkeit, eine akustische Antenne zu implementieren. Der Algorithmus beruht auf der Addition ("Sum") der unterschiedlich verzögerten ("Delay") Eingangssignale der einzelnen Mikrofone. Dabei müssen ebene Schallwellen und Kugelschallwellen jeweils unterschiedlich behandelt werden. Generell gilt die Annahme, dass sich Antenne und Quelle im Freifeld befinden (keine Reflexionen).
+	Der Delay \& Sum Algorithmus ist eine Möglichkeit, eine akustische Antenne zu implementieren. Der Algorithmus beruht auf der Addition ("Sum") der unterschiedlich verzögerten ("Delay") Eingangssignale einzelner Mikrofone. Dabei müssen ebene Schallwellen und Kugelschallwellen jeweils unterschiedlich behandelt werden. Generell gilt die Annahme, dass sich Antenne und Quelle im Freifeld befinden (also keine Reflexionen vorhanden sind).
 	
-	%Skizze generell
 	In Abbildung \ref{fig:das_basic} ist ein beispielhaftes Mikrofonarray dargestellt, bestehend aus $N$ Mikrofonen $m_1,...,m_N$, die im Abstand von $\Delta x$ in einer Reihe angeordnet sind. Eine Schallquelle $Q$ befindet sich im Winkel $\alpha$ vor dem Array.
 	Dieser Winkel führt dazu, dass die Schallwelle jedes Mikrofon mit einer bestimmten Verzögerung $\tau_n$ erreicht.
 	Die Summe der Mikrofonsignale $p_n(t)$ ist dann
@@ -10,10 +9,10 @@
 		s_{sum}(t, \alpha) = \sum_{n=1}^{N} p_n(t - \tau_n(\alpha))
 	\end{equation}
 	Unter der Annahme, dass der Übertragungsweg von der Quelle zur Summierstelle (Luft, Mikrofon, Kabel) keine Signalveränderungen bewirkt, wird also das selbe Signal mit $N-1$ zeitlich verschobenen Kopien von sich selbst addiert.
-	Dadurch kommt es zu Auslöschungen und Abschwächungen, sodass generell $RMS(s_{sum}(t, \alpha=0)) \ge RMS(s_{sum}(t, \alpha \ne 0))$.
+	Dadurch kommt es zu Auslöschungen und Abschwächungen, sodass generell $RMS(s_{sum}(t, \alpha=0)) \ge RMS(s_{sum}(t, \alpha \ne 0))$\footnote{$RMS(x(t)) = \sqrt{\frac{1}{T} \cdot \int_{0}^{T} x^2(t) dt }$}.
 	
 	Die Idee des Delay \& Sum Algorithmus ist nun, die theoretischen Verzögerungszeiten für alle Winkel $\alpha \in [-90^{\circ}, 90^{\circ}]$ zu berechnen und durch nachträgliches "inverses" Verzögern der Mikrofonsignale auszugleichen.
-	Anschließend berechnet man von diesen "invers verzögerten" Signalen den Effektivwert und sucht den Winkel, unter dem dieser maximal wurde.
+	Anschließend summiert man die diese "invers verzögerten" Signale und sucht den Winkel, unter dem der Effektivwert dieser Summe maximal wird.
 	Dieser Winkel wird dann als Schalleinfallsrichtung angenommen.
 	
 	\begin{figure}[h]
@@ -38,8 +37,8 @@
 	berechnet werden, wobei $c = 340 \frac{m}{s}$ für die Schallgeschwindigkeit in Luft angenommen wird.
 	Das Ausgangssignal des Arrays für einen Winkel $\alpha$ berechnet sich dann mit
 	\begin{equation}
-		s = \sqrt{\frac{1}{T} \int_{0}^{T} \sum_{n=1}^{N} p_m(t - \tau_n(\alpha))}
-		\label{eq:das_plane} \footnote{Möser (Hrsg.), Messtechnik der Akustik, Springer 2010, S. 366f}
+		s = \sum_{n=1}^{N} p_m(t - \tau_n(\alpha))
+		\label{eq:das_plane}
 	\end{equation}
 	
 	Trägt man den Effektivwert des Arraysignals über dem Winkel auf, so ergibt sich die Richtungsfunktion des Arrays. In Abbildung \ref{fig:bsp_plot} ist beispielhaft die Richtungsfunktion für eine Quelle bei $\alpha = 15^{\circ}$ dargestellt.
@@ -66,7 +65,7 @@
 		\end{center}
 	\end{figure}
 
-	Die meisten realen Schallquellen strahlen Schall kugelförmig ab. Dadurch verkompliziert sich die Berechnung der inversen Delays. Da der Abstand der Quelle zur Arrayachse $d$ für die Berechnung eine Rolle spielt, muss dieser bekannt sein. Der Algorithmus "probiert" dann wieder eine Reihe von Winkeln durch, wobei sich für jeden Winkel ein Punkt $\vec{p}_{\alpha}$ auf einer zur Arrayachse parallelen Geraden im Abstand $d$ mit
+	Für Kugelquellen gestalltet sich die Berechnung der inversen Delays etwas komplizierter. Da der Abstand der Quelle zur Arrayachse $d$ für die Berechnung eine Rolle spielt, muss dieser bekannt sein. Der Algorithmus "probiert" dann wieder eine Reihe von Winkeln durch, wobei sich für jeden Winkel ein Punkt $\vec{p}_{\alpha}$ auf einer zur Arrayachse parallelen Geraden im Abstand $d$ mit
 	\begin{equation}\vec{p}_{\alpha} = 
 		\begin{pmatrix}
 			\tan(\alpha) * d \\
@@ -87,7 +86,7 @@
 	\end{equation}
 	wobei $L$ die Länge des Arrays ist. Die Zeit $\tau_{\alpha, n}$, die eine Schallwelle braucht, um diesen Abstand zurückzulegen kann mit $\tau_{\alpha, n} = \frac{r_n}{c}$ berechnet werden. Werden alle $\tau_{\alpha, n}$ entsprechend ausgeglichen, so ergibt sich für die tatsächliche Quellenposition (beziehungswese für den Winkel, der dieser entspricht) wieder ein Maximum im Effektivwert des Summensignals aller Mikrofone. Es kann so wie für die Annahme ebener Wellen eine Richtungsfunktion bestimmt werden.
 	
-	Ein wichtiger Unterschied zum Algorithmus für ebene Wellen besteht darin, dass nicht mehr alle Werte in $[-90^{\circ}, 90^{\circ}]$ für $\alpha$ erlaubt sind, da für betraglich größere Winkel das betrachtete Stück der Quellengerade unendlich lang wird. In der vorliegenden Implementierung wird deshalb ein maximaler Betrag für $\alpha$ eingeführt, der einer Quellenposition von 
+	Ein wichtiger Unterschied zum Algorithmus für ebene Wellen besteht darin, dass nicht mehr alle Werte in $[-90^{\circ}, 90^{\circ}]$ für $\alpha$ erlaubt sind, da für betraglich große Winkel das betrachtete Stück der Quellengerade unendlich lang wird. In der vorliegenden Implementierung wird deshalb ein maximaler Betrag für $\alpha$ eingeführt, der einer Quellenposition von 
 	\begin{equation}
 		\vec{p}_q = 
 	\begin{pmatrix}
@@ -100,8 +99,7 @@
 
 \subsection{Gewichtung der Mikrofone}
 
-	Die Richtungsfunktion lässt sich durch eine Gewichtung der einzelnen Mikrofonsignale verschieden formen. In Abbildung \ref{fig:bsp_plot} ist im Vergleich eine Richtungsfunktion mit und ohne Gewichtung zu sehen.
-	Zur Gewichtung der Mikrofone wurde hier die Hann-Fensterfunktion verwendet. Man erkennt, dass das Hauptmaximum deutlich verbreitert wurde, während die Nebenmaxima abgesenkt wurden.
-	Allgemein ergibt die Richtungsfunktion mit Gewichtung geringere Werte als ohne.
-	Dies resultiert aus der Absenkung der einzelnen Mikrofonsignale durch die Fensterfunktion.
+	Die Richtungsfunktion lässt sich durch eine Gewichtung der einzelnen Mikrofonsignale verschieden formen. In Abbildung \ref{fig:bsp_plot} ist eine Richtungsfunktion mit und ohne Gewichtung zu sehen.
+	Zur Gewichtung der Mikrofone wurde hier die Hann-Fensterfunktion verwendet.
+	Man erkennt, dass das Hauptmaximum deutlich verbreitert wurde, während die Nebenmaxima abgesenkt wurden.
 	Je nach Anwendungsfall empfehlen sich verschiedene Fensterfunktionen. Sollen zum Beispiel mehrere Quellen, die eng beieinander liegen, erkannt werden, so wird ein schmaleres Hauptmaximum benötigt\footnote{Möser (Hrsg.), Messtechnik der Akustik, Springer 2010, S. 374ff}.
